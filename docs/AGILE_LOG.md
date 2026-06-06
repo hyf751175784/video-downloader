@@ -43,6 +43,7 @@
 - Added GitHub Actions CI for public-repo quality gates: dependency install, Python compilation, deterministic tests, and macOS app bundle build on pushes and pull requests.
 - Added an output-folder fallback action so completion and settings surfaces can open the configured save directory even when an exact file path is unavailable.
 - Added GitHub issue forms for site failures, app bugs, and feature requests, including support-report guidance and responsible-use checks.
+- Added support-report copy actions directly to the failure screen, so users can capture troubleshooting context without opening Diagnostics first.
 
 ### Verification Notes
 
@@ -64,6 +65,7 @@
 - Local validation passed for the CI workflow shape, deterministic `make test`, Python backend compilation, and macOS app bundle build.
 - Verified the output-folder fallback compiles through the deterministic Swift state test and final macOS app bundle build.
 - Validated all GitHub issue form YAML files locally and documented the support-report issue flow.
+- Verified the failure-screen support-report action through deterministic Swift compilation, final app build, and GitHub CI.
 - Visually inspected the rebuilt main window and directly opened settings sheet; the compact configuration row, grouped settings, segmented format control, explanatory text, toggles, scrolling, and close/diagnostic actions rendered without overlap.
 - Final deterministic `make test` passed after the settings and keep-awake polish.
 - Final bundled diagnostics reported `ready` with zero failures, and strict platform live smoke tests passed 2/2 Bilibili/YouTube expectations after the settings polish.

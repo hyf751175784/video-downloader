@@ -1294,6 +1294,15 @@ struct ContentView: View {
                     }
                     .buttonStyle(B())
                     Button {
+                        vm.copySupportReport()
+                    } label: {
+                        Image(systemName: "doc.text.magnifyingglass")
+                            .font(.system(size: 11, weight: .semibold))
+                            .frame(width: 30, height: 28)
+                    }
+                    .buttonStyle(B())
+                    .help("复制支持报告")
+                    Button {
                         vm.resetState()
                     } label: {
                         Label("继续", systemImage: "arrow.counterclockwise")
@@ -1332,6 +1341,15 @@ struct ContentView: View {
                     }
                     .buttonStyle(B())
                     .disabled(vm.url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Button {
+                        vm.copySupportReport()
+                    } label: {
+                        Image(systemName: "doc.text.magnifyingglass")
+                            .font(.system(size: 11, weight: .semibold))
+                            .frame(width: 30, height: 28)
+                    }
+                    .buttonStyle(B())
+                    .help("复制支持报告")
                 }
             }
             if vm.terminalRunReady && vm.terminalFailedDownload != nil {

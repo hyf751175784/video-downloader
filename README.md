@@ -37,7 +37,7 @@ It is designed for personal archiving of media you own or have permission to dow
 - **Batch progress**: see current item, total progress, stage, speed, ETA, success count, failure count, and waiting count.
 - **Proxy and cookies**: optional proxy routing and Chrome-cookie reuse for pages that work in your browser but block anonymous automation.
 - **Browser capture mode**: open a controlled Chrome session, play the video, and capture the media request for download.
-- **Support report copy**: one click gathers app state, queue counts, failed tasks, recent history, logs, and diagnostics into a plain-text report.
+- **Support report copy**: the diagnostics and failure screens can copy app state, queue counts, failed tasks, recent history, logs, and diagnostics into a plain-text report.
 - **Output-folder fallback**: completion and settings surfaces can open the output directory even when an exact file path is missing or the file was moved.
 - **Real-world test matrix**: maintain live samples for platforms and dynamic video sites without downloading full videos during smoke tests.
 
@@ -88,7 +88,7 @@ build/VideoDownloader.app
 5. Download immediately or add multiple items to the queue.
 6. Open the task center to monitor progress, retry failures, or continue the next task.
 7. Use Settings (`Command + ,`) for proxy, cookies, notifications, output format, and keep-awake behavior.
-8. Open Diagnostics to copy a support report when a site or download needs troubleshooting.
+8. Copy a support report from Diagnostics or the failure screen when a site or download needs troubleshooting.
 
 ### Command Line
 

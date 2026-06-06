@@ -136,7 +136,7 @@ For captured/direct media URLs, the backend also derives browser-style request h
 
 The backend exposes `diagnose`, a JSON command that checks Python, yt-dlp, browser impersonation, ffmpeg, output directory writeability, proxy reachability, Playwright importability, system Chrome, bundled sniffer scripts, the current Referer value, and cookie-source state. The macOS app presents this as a compact diagnostics sheet from the toolbar.
 
-The diagnostics sheet can also copy a support report. That report is generated on the Swift side and combines current app state, output/proxy/cookie settings, run counters, active/waiting/failed queue summaries, pending detection state, recent history errors, recent app log lines, and the latest diagnostics result. It intentionally stays plain text so it can be pasted into an issue, chat, or bug report without creating files on disk.
+The diagnostics sheet and failure screen can also copy a support report. That report is generated on the Swift side and combines current app state, output/proxy/cookie settings, run counters, active/waiting/failed queue summaries, pending detection state, recent history errors, recent app log lines, and the latest diagnostics result. It intentionally stays plain text so it can be pasted into an issue, chat, or bug report without creating files on disk.
 
 ## Metadata Robustness
 
