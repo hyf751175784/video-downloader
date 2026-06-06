@@ -1567,6 +1567,13 @@ struct ContentView: View {
                 Text("诊断").font(.system(size: 15, weight: .semibold))
                 Spacer()
                 Button {
+                    vm.copySupportReport()
+                } label: {
+                    Image(systemName: "doc.text.magnifyingglass").font(.system(size: 12)).frame(width: 28, height: 26)
+                }
+                .buttonStyle(B())
+                .help("复制支持报告")
+                Button {
                     vm.copyDiagnostics()
                 } label: {
                     Image(systemName: "doc.on.doc").font(.system(size: 12)).frame(width: 28, height: 26)

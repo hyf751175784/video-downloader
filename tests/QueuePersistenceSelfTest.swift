@@ -324,6 +324,15 @@ struct QueuePersistenceSelfTest {
               vm.terminalFailedDownload != nil else {
             throw TestFailure("finished batch did not report complete overall progress")
         }
+        let supportReport = vm.supportReportText(now: Date(timeIntervalSince1970: 0))
+        guard supportReport.contains("Video Downloader Support Report"),
+              supportReport.contains("Queue: active 0, waiting 0, failed 2"),
+              supportReport.contains("Failed tasks:"),
+              supportReport.contains("https://example.com/slow-fail-download"),
+              supportReport.contains("Recent history:"),
+              supportReport.contains("synthetic download failure") else {
+            throw TestFailure("support report did not include queue, failed-task, and recent-history context")
+        }
         vm.clearFailedDownloads()
 
         let slowVideo = VideoInfo(

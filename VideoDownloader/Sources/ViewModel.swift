@@ -1340,6 +1340,143 @@ final class DownloadViewModel: ObservableObject {
         log("📋 已复制诊断结果")
     }
 
+    func copySupportReport() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(supportReportText(), forType: .string)
+        log("📋 已复制支持报告")
+    }
+
+    func supportReportText(now: Date = Date()) -> String {
+        var lines = [
+            "Video Downloader Support Report",
+            "Generated: \(Self.supportReportDateFormatter.string(from: now))",
+            "App state: \(supportStateLabel)",
+            "Output: \(outputDir)",
+            "Output format: \(outputFormat)",
+            "Proxy: \(proxyArg ?? "direct")",
+            "Cookies: \(browserCookiesEnabled ? "Chrome" : "disabled")",
+            "Auto continue: \(queueAutoContinue ? "enabled" : "disabled")",
+            "Notifications: \(notificationEnabled ? "enabled" : "disabled")",
+            "Keep awake: \(keepAwakeEnabled ? "enabled" : "disabled")",
+            "System activity: \(systemActivityActive ? "active" : "inactive")",
+            "Run: \(runFinishedCount)/\(runTotalCount) processed, \(runCompletedCount) success, \(runFailedCount) failed, overall \(Int(runOverallPercent))%",
+            "Queue: active \(activeDownload == nil ? 0 : 1), waiting \(downloadQueue.count), failed \(failedDownloads.count)",
+        ]
+
+        if let batchDetection {
+            lines.append("Detection batch: \(batchDetection.summary), current: \(batchDetection.currentURL)")
+        } else if hasPendingBatchDetection {
+            lines.append("Detection batch: pending restore available")
+        }
+
+        lines.append("")
+        lines.append("Active task:")
+        lines.append(activeDownload.map { supportTaskLine($0) } ?? "- none")
+
+        lines.append("")
+        lines.append("Waiting tasks:")
+        appendTaskList(downloadQueue, to: &lines)
+
+        lines.append("")
+        lines.append("Failed tasks:")
+        appendTaskList(failedDownloads, to: &lines)
+
+        lines.append("")
+        lines.append("Recent history:")
+        if history.isEmpty {
+            lines.append("- none")
+        } else {
+            for record in history.prefix(8) {
+                var line = "- [\(record.status)] \(record.fileName ?? record.title) · \(record.url)"
+                if let error = record.error, !error.isEmpty {
+                    line += " · error: \(singleLine(error, limit: 160))"
+                }
+                lines.append(line)
+            }
+        }
+
+        lines.append("")
+        lines.append("Recent app log:")
+        if statusLog.isEmpty {
+            lines.append("- none")
+        } else {
+            for item in statusLog.suffix(20) {
+                lines.append("- \(singleLine(item, limit: 220))")
+            }
+        }
+
+        lines.append("")
+        lines.append("Diagnostics:")
+        if let diagnostics {
+            lines.append("Summary: \(diagnostics.summary), \(diagnostics.warnings) warnings, \(diagnostics.failures) failures")
+            for item in diagnostics.checks {
+                lines.append("- [\(item.status.uppercased())] \(item.name): \(singleLine(item.detail, limit: 220))")
+            }
+        } else if let diagnosticsError {
+            lines.append("Error: \(singleLine(diagnosticsError, limit: 400))")
+        } else {
+            lines.append("No diagnostic result yet.")
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    private static let supportReportDateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private var supportStateLabel: String {
+        switch state {
+        case .idle:
+            return "idle"
+        case .detecting:
+            return "detecting"
+        case .detected(let videos):
+            return "detected \(videos.count) candidate(s)"
+        case .downloading(let label, let percent):
+            return "downloading \(Int(percent))% · \(singleLine(label, limit: 80))"
+        case .converting(let label):
+            return "converting · \(singleLine(label, limit: 80))"
+        case .completed(let response):
+            return "completed · \(response.fileName ?? response.filePath ?? "unknown file")"
+        case .failed(let error):
+            return "failed · \(singleLine(error, limit: 140))"
+        }
+    }
+
+    private func appendTaskList(_ items: [DownloadQueueItem], to lines: inout [String]) {
+        if items.isEmpty {
+            lines.append("- none")
+            return
+        }
+        for item in items.prefix(10) {
+            lines.append(supportTaskLine(item))
+        }
+        if items.count > 10 {
+            lines.append("- ... \(items.count - 10) more")
+        }
+    }
+
+    private func supportTaskLine(_ item: DownloadQueueItem) -> String {
+        var line = "- \(singleLine(item.title, limit: 120)) · \(item.formatLabel) · \(item.video.webpageUrl)"
+        if let referer = item.video.referer, !referer.isEmpty {
+            line += " · Referer: \(referer)"
+        }
+        return line
+    }
+
+    private func singleLine(_ value: String, limit: Int) -> String {
+        let collapsed = value
+            .replacingOccurrences(of: "\r", with: " ")
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\t", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard collapsed.count > limit else { return collapsed }
+        return String(collapsed.prefix(max(limit - 1, 0))) + "…"
+    }
+
     // ── Pure async exec ──
     static func exec(
         python: String,

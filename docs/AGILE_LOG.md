@@ -39,6 +39,7 @@
 - Added one-click diagnostic result copying from the macOS diagnostics sheet.
 - Added browser-style Origin/Range/Fetch headers for captured/direct media downloads and an automatic ffmpeg direct-media fallback when yt-dlp is rejected.
 - Strengthened the deterministic HLS self-test so playlist/segment requests require both the correct Referer and Origin, and added playable-output coverage for the ffmpeg fallback.
+- Added a diagnostics support-report copy action that gathers app state, queue/run counters, active/waiting/failed tasks, recent history, app logs, and diagnostic checks into one plain-text report.
 
 ### Verification Notes
 
@@ -56,6 +57,7 @@
 - Final deterministic `make test` passed after the non-blocking process-I/O work, including playable HLS/ffmpeg output verification.
 - Final bundled diagnostics reported `ready` with zero failures, and strict platform live smoke tests passed 2/2 Bilibili/YouTube expectations.
 - The final new-user-sites live run passed huavod and nnyy media probes; xiaoyakankan detection succeeded but its current CDN media probe returned an anti-hotlink `403`.
+- Swift state tests verified that the support report includes failed-task, queue, and recent-history context for troubleshooting.
 - Visually inspected the rebuilt main window and directly opened settings sheet; the compact configuration row, grouped settings, segmented format control, explanatory text, toggles, scrolling, and close/diagnostic actions rendered without overlap.
 - Final deterministic `make test` passed after the settings and keep-awake polish.
 - Final bundled diagnostics reported `ready` with zero failures, and strict platform live smoke tests passed 2/2 Bilibili/YouTube expectations after the settings polish.
