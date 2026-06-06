@@ -1,5 +1,6 @@
 # Video Downloader
 
+[![CI](https://github.com/hyf751175784/video-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/hyf751175784/video-downloader/actions/workflows/ci.yml)
 [![macOS](https://img.shields.io/badge/macOS-14%2B-111827?logo=apple&logoColor=white)](#requirements)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-native-0A84FF?logo=swift&logoColor=white)](#tech-stack)
 [![Python](https://img.shields.io/badge/Python-backend-3776AB?logo=python&logoColor=white)](#tech-stack)
@@ -137,6 +138,10 @@ make test-live LIVE_ARGS='--group new-user-sites --proxy http://127.0.0.1:7890 -
 The local suite covers compact queue recovery, multi-link extraction, direct-link batch import, isolated detection failures, batch-wide progress accounting, exact retry behavior, recoverable stops, HLS playlist detection, Referer/Origin-protected segments, ffmpeg fallback, and playable MP4/MKV verification.
 
 Live tests are intentionally separate. Websites change, block, rate-limit, expire media URLs, or require regional/session access. The matrix classifies outcomes as media, guidance-required, protected/unsupported, timeout, or failure.
+
+## Continuous Integration
+
+GitHub Actions runs the deterministic quality gate on pushes and pull requests: install dependencies, compile Python backend files, run `make test`, and build the macOS app bundle. Live website tests remain manual because external sites are volatile.
 
 ## How It Works
 

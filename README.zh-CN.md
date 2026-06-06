@@ -1,5 +1,6 @@
 # Video Downloader
 
+[![CI](https://github.com/hyf751175784/video-downloader/actions/workflows/ci.yml/badge.svg)](https://github.com/hyf751175784/video-downloader/actions/workflows/ci.yml)
 [![macOS](https://img.shields.io/badge/macOS-14%2B-111827?logo=apple&logoColor=white)](#系统要求)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-native-0A84FF?logo=swift&logoColor=white)](#技术栈)
 [![Python](https://img.shields.io/badge/Python-backend-3776AB?logo=python&logoColor=white)](#技术栈)
@@ -143,6 +144,10 @@ make test-live LIVE_ARGS='--group new-user-sites --proxy http://127.0.0.1:7890 -
 本地测试会覆盖紧凑队列恢复、多链接提取、直接媒体批量导入、单项侦测失败隔离、批量进度统计、精确重试、中断恢复、HLS 侦测、Referer/Origin 防盗链分片、ffmpeg 回退，以及 MP4/MKV 可播放性校验。
 
 真实网站测试故意独立出来，因为外部站点会变化、限流、过期、地区限制或要求会话状态。测试矩阵会把结果分类为可下载媒体、需要引导、受保护/不支持、超时或失败。
+
+## 持续集成
+
+GitHub Actions 会在推送和 Pull Request 时运行确定性质量门禁：安装依赖、编译 Python 后端文件、运行 `make test`，并构建 macOS 应用包。真实网站测试保留为手动执行，因为外部站点状态波动很大。
 
 ## 工作原理
 

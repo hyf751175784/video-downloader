@@ -15,6 +15,8 @@ make run
 
 Use `make test-live` only when you need real website coverage. Live sites are volatile and may fail because of network, region, account, anti-bot, or CDN behavior.
 
+GitHub Actions runs the deterministic gate on pushes and pull requests: dependency install, Python compilation, `make test`, and `make build`.
+
 ## Commit Message Rule
 
 All commits should use bilingual English/Chinese messages.
@@ -66,6 +68,8 @@ make run
 ```
 
 只有在需要真实网站覆盖时再运行 `make test-live`。真实站点会受网络、地区、账号、反爬、CDN 策略影响，失败不一定代表本地代码回归。
+
+GitHub Actions 会在推送和 Pull Request 时运行确定性门禁：安装依赖、Python 编译、`make test` 和 `make build`。
 
 ## 提交信息规则
 

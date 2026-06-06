@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: macOS build and deterministic tests
+    runs-on: macos-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+          swift --version
+
+      - name: Install system dependencies
+        run: |
+          brew update
+          brew install ffmpeg
+          ffmpeg -version
+          ffprobe -version
+
+      - name: Install Python backend dependencies
+        run: make install-deps
+
+      - name: Compile Python backend
+        run: python3 -m py_compile backend/*.py
+
+      - name: Run deterministic local tests
+        run: make test
+
+      - name: Build macOS app bundle
+        run: make build
