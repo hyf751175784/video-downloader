@@ -1698,6 +1698,10 @@ final class DownloadViewModel: ObservableObject {
         p.directoryURL = URL(fileURLWithPath: outputDir)
         if p.runModal() == .OK, let u = p.url { outputDir = u.path }
     }
+    func openOutputDir() {
+        try? FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
+        NSWorkspace.shared.open(URL(fileURLWithPath: outputDir, isDirectory: true))
+    }
     func openInFinder(_ path: String) { NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "") }
     func playFile(_ path: String) { NSWorkspace.shared.open(URL(fileURLWithPath: path)) }
     func resetState() {

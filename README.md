@@ -38,6 +38,7 @@ It is designed for personal archiving of media you own or have permission to dow
 - **Proxy and cookies**: optional proxy routing and Chrome-cookie reuse for pages that work in your browser but block anonymous automation.
 - **Browser capture mode**: open a controlled Chrome session, play the video, and capture the media request for download.
 - **Support report copy**: one click gathers app state, queue counts, failed tasks, recent history, logs, and diagnostics into a plain-text report.
+- **Output-folder fallback**: completion and settings surfaces can open the output directory even when an exact file path is missing or the file was moved.
 - **Real-world test matrix**: maintain live samples for platforms and dynamic video sites without downloading full videos during smoke tests.
 
 ## Screens And Product Surface

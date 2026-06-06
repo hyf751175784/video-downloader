@@ -1170,10 +1170,15 @@ struct ContentView: View {
                         .padding(.vertical, 7)
                 }
                 .buttonStyle(A())
+                .disabled(response.filePath == nil)
                 Button {
-                    if let path = response.filePath { vm.openInFinder(path) }
+                    if let path = response.filePath {
+                        vm.openInFinder(path)
+                    } else {
+                        vm.openOutputDir()
+                    }
                 } label: {
-                    Label("打开", systemImage: "folder")
+                    Label(response.filePath == nil ? "打开目录" : "打开", systemImage: "folder")
                         .font(.system(size: 12, weight: .semibold))
                         .padding(.horizontal, 13)
                         .padding(.vertical, 7)
@@ -1198,6 +1203,7 @@ struct ContentView: View {
                         .frame(width: 30, height: 28)
                 }
                 .buttonStyle(B())
+                .disabled(response.filePath == nil)
                 .help("复制文件路径")
                 Button {
                     vm.resetState()
@@ -1443,16 +1449,27 @@ struct ContentView: View {
                         }
                         Divider()
                         settingsRow("保存目录", detail: vm.shortOutputPath, icon: "folder") {
-                            Button {
-                                vm.selectOutputDir()
-                            } label: {
-                                Label("选择", systemImage: "folder.badge.plus")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .padding(.horizontal, 9)
-                                    .padding(.vertical, 5)
+                            HStack(spacing: 6) {
+                                Button {
+                                    vm.openOutputDir()
+                                } label: {
+                                    Image(systemName: "folder")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .frame(width: 26, height: 24)
+                                }
+                                .buttonStyle(B())
+                                .help("打开保存目录")
+                                Button {
+                                    vm.selectOutputDir()
+                                } label: {
+                                    Label("选择", systemImage: "folder.badge.plus")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .padding(.horizontal, 9)
+                                        .padding(.vertical, 5)
+                                }
+                                .buttonStyle(B())
+                                .disabled(vm.state.isDownloading)
                             }
-                            .buttonStyle(B())
-                            .disabled(vm.state.isDownloading)
                         }
                     }
 

@@ -166,6 +166,8 @@ For direct or captured media URLs, the backend derives a safe output filename fr
 
 yt-dlp is asked to print the final `after_move:filepath`. The backend also parses common yt-dlp log lines such as destination, merge target, remux target, and already-downloaded messages. Only if those paths are unavailable does it scan the output folder. This prevents false "file not found" errors when yt-dlp reuses an existing file or does not update mtime.
 
+The SwiftUI completion surface still keeps an output-folder fallback. If a completed response lacks an exact file path, or the user needs to inspect the save location manually, the app creates and opens the configured output directory instead of presenting a dead file action.
+
 ## Quality Selection
 
 Some extractors expose video-only and audio-only formats. When the macOS UI downloads a selected video-only quality, it sends a format expression that combines that video format with `bestaudio`. This avoids the common DASH/Bilibili/YouTube failure mode where a user-selected "1080p" file is missing audio or is awkwardly packaged.
