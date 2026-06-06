@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "sites": [
+    {
+      "name": "novipnoad last of us sample",
+      "group": "dynamic",
+      "url": "https://www.novipnoad.net/tv/western/153102.html",
+      "expect": "media_or_guidance",
+      "no_sniff": true,
+      "notes": "Cloudflare/dynamic player; normal detection may guide user to browser capture."
+    },
+    {
+      "name": "yfsp spirit ferry sample",
+      "group": "dynamic",
+      "url": "https://www.yfsp.tv/play/tqA8rMxWCj9?id=KgGnjz6UEv7",
+      "expect": "media",
+      "serial": true,
+      "notes": "Known dynamic-player sample that should return a real m3u8 with Referer."
+    },
+    {
+      "name": "Bilibili long share sample",
+      "group": "platform",
+      "url": "https://www.bilibili.com/video/BV1zzRKBpEmp?buvid=Y1402719DACD25314D33AD6ECF0678F08A6F&from_spmid=search.search-result.0.0&is_story_h5=false&mid=l3Wa82OmHZIo9OBL%2BCAtIQ%3D%3D&plat_id=114&share_from=ugc&share_medium=iphone&share_plat=ios&share_session_id=8DB46B61-A10D-466A-A7A8-AD61BED05397&share_source=WEIXIN&share_tag=s_i&timestamp=1780456658&unique_k=ZDHuG6T&up_id=1183787775",
+      "expect": "media_or_guidance",
+      "no_sniff": true,
+      "notes": "Bilibili may require Chrome cookies or logged-in state."
+    },
+    {
+      "name": "YouTube sample",
+      "group": "platform",
+      "url": "https://www.youtube.com/watch?v=V4RO6NWFryk",
+      "expect": "media_or_guidance",
+      "no_sniff": true,
+      "notes": "Network/proxy/cookie state can affect availability."
+    },
+    {
+      "name": "huavod sample",
+      "group": "new-user-sites",
+      "url": "https://huavod.com/vodplay/123905-1-1.html",
+      "expect": "media_or_guidance",
+      "serial": true,
+      "notes": "User-requested live site; dynamic player likely."
+    },
+    {
+      "name": "xiaoyakankan Taiwan sample",
+      "group": "new-user-sites",
+      "url": "https://tw.xiaoyakankan.io/vod/play/id/t6il7uu3-1-1.html",
+      "expect": "media_or_guidance",
+      "serial": true,
+      "notes": "User-requested live site; media can be detected, but its CDN may intermittently return regional/anti-hotlink 403 responses."
+    },
+    {
+      "name": "iQIYI sample",
+      "group": "protected-platforms",
+      "url": "https://www.iqiyi.com/v_155c0ddwnqs.html",
+      "expect": "protected_or_guidance",
+      "serial": true,
+      "notes": "Large platform; may use DRM, login, or app-only protection. The app should not bypass DRM."
+    },
+    {
+      "name": "nnyy sample",
+      "group": "new-user-sites",
+      "url": "https://nnyy.in/dianying/202245881.html",
+      "expect": "media_or_guidance",
+      "serial": true,
+      "notes": "User-requested live site; dynamic player likely."
+    },
+    {
+      "name": "hsex sample",
+      "group": "sensitive",
+      "url": "https://hsex.tv/video-1208157.htm",
+      "expect": "media_or_guidance",
+      "sensitive": true,
+      "serial": true,
+      "notes": "Adult-domain sample from earlier testing; skipped unless --include-sensitive is passed."
+    }
+  ]
+}

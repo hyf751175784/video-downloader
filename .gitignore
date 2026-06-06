@@ -1,0 +1,36 @@
+# Build artifacts
+build/
+dist/
+*.app
+*.dmg
+*.zip
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# IDE
+*.xcodeproj/
+*.xcworkspace/
+
+# Local credentials/session data
+*cookies*.txt
+*.cookies
+*.env
+.env.*
+*.pem
+*.key
+
+# Local outputs and reports
+downloads/
+output/
+*.log
+*.tmp
+live-site-report*.json
