@@ -211,6 +211,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Commit messages in this repository shoul
 Improve task center recovery / 改进任务中心恢复能力
 ```
 
+For site failures, please open a "Site download failure / 网站下载失败" issue and paste the app's copied support report. Structured reports make real-site fixes much faster.
+
 ## License
 
 [MIT](LICENSE)

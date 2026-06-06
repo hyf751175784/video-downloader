@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and responsible use / 使用问题与合规说明
+    url: https://github.com/hyf751175784/video-downloader#responsible-use
+    about: Please read the responsible-use section before reporting protected or DRM-gated sites. / 提交受保护或 DRM 网站问题前，请先阅读合规使用说明。

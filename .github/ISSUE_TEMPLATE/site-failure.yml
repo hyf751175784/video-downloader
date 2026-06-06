@@ -1,0 +1,67 @@
+name: Site download failure / 网站下载失败
+description: Report a webpage or media URL that cannot be detected, downloaded, merged, converted, or played. / 报告无法侦测、下载、合并、转换或播放的网站。
+title: "[Site] "
+labels: ["site-compatibility", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing a real site. Please only report media you own, created, are licensed to save, or otherwise have permission to download.
+
+        感谢测试真实网站。请只报告你拥有、制作、获得授权或有权限下载的视频。
+  - type: input
+    id: url
+    attributes:
+      label: URL / 链接
+      description: Paste the webpage or direct media URL. Remove private tokens if needed. / 粘贴网页或媒体直链；如有私人 token 请先脱敏。
+      placeholder: https://example.com/watch/...
+    validations:
+      required: true
+  - type: dropdown
+    id: failure-stage
+    attributes:
+      label: Failure stage / 失败阶段
+      options:
+        - Detection found nothing / 侦测不到
+        - Candidate found but download failed / 有候选但下载失败
+        - Download finished but file cannot play / 下载完成但无法播放
+        - Browser capture did not find media / 浏览器捕获未找到媒体
+        - m3u8 segments failed or returned 403 / m3u8 分片失败或 403
+        - Other / 其他
+    validations:
+      required: true
+  - type: dropdown
+    id: access-method
+    attributes:
+      label: Access options used / 使用的访问选项
+      options:
+        - Direct connection, no cookies / 直连，无 Cookie
+        - Proxy enabled / 已启用代理
+        - Chrome cookies enabled / 已启用 Chrome Cookie
+        - Proxy and Chrome cookies enabled / 已启用代理和 Chrome Cookie
+        - Browser capture mode / 浏览器捕获模式
+        - Not sure / 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: support-report
+    attributes:
+      label: Support report / 支持报告
+      description: In the app, open Diagnostics and click "Copy support report", then paste it here. / 在应用里打开诊断页，点击“复制支持报告”，然后粘贴到这里。
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result / 期望结果
+      description: What should the app detect or save? / 你期望应用侦测或保存什么？
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra notes / 其他说明
+      description: Mention region, login requirements, browser playback behavior, or whether the page uses DRM. / 可说明地区、登录要求、浏览器是否能播放、是否可能使用 DRM。
+    validations:
+      required: false

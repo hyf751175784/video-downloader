@@ -17,6 +17,16 @@ Use `make test-live` only when you need real website coverage. Live sites are vo
 
 GitHub Actions runs the deterministic gate on pushes and pull requests: dependency install, Python compilation, `make test`, and `make build`.
 
+## Reporting Issues
+
+Use the GitHub issue forms instead of blank issues.
+
+- For a specific website or media URL, choose **Site download failure / 网站下载失败** and paste the support report copied from the app's Diagnostics sheet.
+- For app behavior that is not site-specific, choose **App bug / 应用 Bug**.
+- For product ideas, choose **Feature request / 功能建议**.
+
+Do not include private cookies, account tokens, paid media, or credentials in an issue.
+
 ## Commit Message Rule
 
 All commits should use bilingual English/Chinese messages.
@@ -70,6 +80,16 @@ make run
 只有在需要真实网站覆盖时再运行 `make test-live`。真实站点会受网络、地区、账号、反爬、CDN 策略影响，失败不一定代表本地代码回归。
 
 GitHub Actions 会在推送和 Pull Request 时运行确定性门禁：安装依赖、Python 编译、`make test` 和 `make build`。
+
+## 反馈问题
+
+请使用 GitHub issue 表单，不要提交空白 issue。
+
+- 针对具体网站或媒体链接，选择 **Site download failure / 网站下载失败**，并粘贴应用诊断页复制的支持报告。
+- 针对不局限于某个网站的应用行为，选择 **App bug / 应用 Bug**。
+- 针对产品想法，选择 **Feature request / 功能建议**。
+
+不要在 issue 中包含私人 Cookie、账号 token、付费媒体或凭据。
 
 ## 提交信息规则
 

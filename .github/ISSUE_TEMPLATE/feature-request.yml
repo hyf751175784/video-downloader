@@ -1,0 +1,48 @@
+name: Feature request / 功能建议
+description: Suggest a product, workflow, UI, or engineering improvement. / 提出产品、流程、界面或工程改进建议。
+title: "[Feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / 问题
+      description: What user problem should this solve? / 这个建议解决什么用户问题？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution / 建议方案
+      description: What should Video Downloader do differently? / 你希望 Video Downloader 怎么做？
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / 替代方案
+      description: Are there simpler workflows or existing tools that already help? / 是否有更简单的流程或已有工具能解决？
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area / 领域
+      options:
+        - Detection / 侦测
+        - Download or conversion / 下载或转换
+        - Queue and progress / 队列和进度
+        - UI and workflow / 界面和流程
+        - Diagnostics and testing / 诊断和测试
+        - Packaging and release / 打包和发布
+        - Documentation / 文档
+        - Other / 其他
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check / 范围确认
+      options:
+        - label: This feature does not require DRM decryption or bypassing access controls. / 这个功能不需要解密 DRM 或绕过访问控制。
+          required: true

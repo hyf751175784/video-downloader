@@ -217,6 +217,8 @@ video-downloader/
 Improve task center recovery / 改进任务中心恢复能力
 ```
 
+如果是网站下载失败，请使用 "Site download failure / 网站下载失败" issue 模板，并粘贴应用复制出来的支持报告。结构化信息能让真实站点修复快很多。
+
 ## 许可证
 
 [MIT](LICENSE)
