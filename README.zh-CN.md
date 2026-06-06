@@ -83,6 +83,14 @@ make run
 build/VideoDownloader.app
 ```
 
+生成可分发压缩包：
+
+```bash
+make package
+```
+
+产物会写入 `dist/VideoDownloader-<version>-macos-arm64.zip`，并生成对应的 `.sha256` 校验文件。
+
 ## 使用方法
 
 ### macOS 应用
@@ -149,6 +157,8 @@ make test-live LIVE_ARGS='--group new-user-sites --proxy http://127.0.0.1:7890 -
 ## 持续集成
 
 GitHub Actions 会在推送和 Pull Request 时运行确定性质量门禁：安装依赖、编译 Python 后端文件、运行 `make test`，并构建 macOS 应用包。真实网站测试保留为手动执行，因为外部站点状态波动很大。
+
+CI 也会运行 `make package`，确保发布 zip 和校验文件路径持续可用。
 
 ## 工作原理
 

@@ -77,6 +77,14 @@ The built app is created at:
 build/VideoDownloader.app
 ```
 
+To create a distributable archive:
+
+```bash
+make package
+```
+
+The package is written to `dist/VideoDownloader-<version>-macos-arm64.zip` with a matching `.sha256` checksum file.
+
 ## Usage
 
 ### Mac App
@@ -143,6 +151,8 @@ Live tests are intentionally separate. Websites change, block, rate-limit, expir
 ## Continuous Integration
 
 GitHub Actions runs the deterministic quality gate on pushes and pull requests: install dependencies, compile Python backend files, run `make test`, and build the macOS app bundle. Live website tests remain manual because external sites are volatile.
+
+The CI also runs `make package` so the release zip and checksum path stay healthy.
 
 ## How It Works
 

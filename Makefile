@@ -1,7 +1,8 @@
-.PHONY: build run clean install-deps app test test-swift test-live test-url help
+.PHONY: build package run clean install-deps app test test-swift test-live test-url help
 
 APP_NAME    := VideoDownloader
 PROJECT_DIR := $(shell pwd)
+APP_VERSION := $(shell /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' $(PROJECT_DIR)/VideoDownloader/Resources/Info.plist 2>/dev/null || echo 0.0.0)
 SOURCES     := $(wildcard $(PROJECT_DIR)/VideoDownloader/Sources/*.swift)
 BACKEND     := $(PROJECT_DIR)/backend/downloader.py \
                $(PROJECT_DIR)/backend/network_sniffer.py \
@@ -12,8 +13,11 @@ BACKEND     := $(PROJECT_DIR)/backend/downloader.py \
 PLIST       := $(PROJECT_DIR)/VideoDownloader/Resources/Info.plist
 ICON        := $(PROJECT_DIR)/VideoDownloader/Resources/AppIcon.icns
 BUILD_DIR   := $(PROJECT_DIR)/build
+DIST_DIR    := $(PROJECT_DIR)/dist
 APP_BUNDLE  := $(BUILD_DIR)/$(APP_NAME).app
 APP_EXEC    := $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
+PACKAGE_BASE := $(APP_NAME)-$(APP_VERSION)-macos-arm64
+PACKAGE_ZIP  := $(DIST_DIR)/$(PACKAGE_BASE).zip
 VENV_DIR    := $(PROJECT_DIR)/venv
 SWIFT       := /usr/bin/swift
 SDK_PATH    := $(shell xcrun --show-sdk-path --sdk macosx)
@@ -25,6 +29,7 @@ help:
 	@echo ""
 	@echo "  make install-deps    Install Python + yt-dlp dependencies"
 	@echo "  make build           Build the macOS .app bundle"
+	@echo "  make package         Build a distributable zip + sha256"
 	@echo "  make run             Build and launch the app"
 	@echo "  make test            Run backend CLI tests"
 	@echo "  make test-swift      Run Swift state/persistence tests"
@@ -49,6 +54,16 @@ $(VENV_DIR)/bin/python3:
 
 build: $(APP_EXEC)
 	@echo "✅ Build complete: $(APP_BUNDLE)"
+
+package: build
+	@echo "📦 Packaging $(PACKAGE_BASE)..."
+	@mkdir -p $(DIST_DIR)
+	@rm -f $(PACKAGE_ZIP) $(PACKAGE_ZIP).sha256
+	@ditto -c -k --keepParent --norsrc --noextattr --noqtn --noacl $(APP_BUNDLE) $(PACKAGE_ZIP)
+	@shasum -a 256 $(PACKAGE_ZIP) > $(PACKAGE_ZIP).sha256
+	@echo "   Package size: $$(du -sh $(PACKAGE_ZIP) | cut -f1)"
+	@echo "   Checksum: $$(cut -d ' ' -f1 $(PACKAGE_ZIP).sha256)"
+	@echo "✅ Package complete: $(PACKAGE_ZIP)"
 
 $(APP_EXEC): $(SOURCES) $(PLIST) $(ICON) $(BACKEND) Makefile | $(VENV_DIR)/bin/python3
 	@echo "🔨 Building $(APP_NAME)..."
@@ -124,5 +139,5 @@ test-url: $(VENV_DIR)/bin/python3
 
 clean:
 	@echo "🧹 Cleaning build artifacts..."
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(DIST_DIR)
 	@echo "✅ Clean"

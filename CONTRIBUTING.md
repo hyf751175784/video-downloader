@@ -17,6 +17,8 @@ Use `make test-live` only when you need real website coverage. Live sites are vo
 
 GitHub Actions runs the deterministic gate on pushes and pull requests: dependency install, Python compilation, `make test`, and `make build`.
 
+Use `make package` before preparing a release. It creates `dist/VideoDownloader-<version>-macos-arm64.zip` and a matching SHA-256 checksum file.
+
 ## Reporting Issues
 
 Use the GitHub issue forms instead of blank issues.
@@ -80,6 +82,8 @@ make run
 只有在需要真实网站覆盖时再运行 `make test-live`。真实站点会受网络、地区、账号、反爬、CDN 策略影响，失败不一定代表本地代码回归。
 
 GitHub Actions 会在推送和 Pull Request 时运行确定性门禁：安装依赖、Python 编译、`make test` 和 `make build`。
+
+准备发布前运行 `make package`。它会生成 `dist/VideoDownloader-<version>-macos-arm64.zip` 和对应的 SHA-256 校验文件。
 
 ## 反馈问题
 

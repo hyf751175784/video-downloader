@@ -45,3 +45,6 @@ jobs:
 
       - name: Build macOS app bundle
         run: make build
+
+      - name: Build distributable package
+        run: make package

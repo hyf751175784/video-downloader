@@ -48,6 +48,10 @@ docs/
 Makefile            Build, run, test automation
 ```
 
+## Packaging
+
+`make package` builds the app bundle, then writes a versioned zip archive and matching SHA-256 checksum under `dist/`. The archive name is derived from `CFBundleShortVersionString`, for example `VideoDownloader-1.0-macos-arm64.zip`. Release artifacts are intentionally kept out of git and regenerated from source.
+
 ## Test Layers
 
 `make test` is deterministic and local. Its Swift state layer verifies compact queue persistence, multi-link extraction, direct-link batch import, and sequential webpage batch detection where one synthetic failure does not stop later items. Its backend layer generates a tiny HLS fixture, exercises webpage/iframe detection, enforces Referer-protected segment access, downloads and merges segments, and validates playable MP4/MKV output.

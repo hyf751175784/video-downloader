@@ -44,6 +44,7 @@
 - Added an output-folder fallback action so completion and settings surfaces can open the configured save directory even when an exact file path is unavailable.
 - Added GitHub issue forms for site failures, app bugs, and feature requests, including support-report guidance and responsible-use checks.
 - Added support-report copy actions directly to the failure screen, so users can capture troubleshooting context without opening Diagnostics first.
+- Added `make package` to create a versioned macOS zip and SHA-256 checksum for future GitHub releases, and wired it into CI.
 
 ### Verification Notes
 
@@ -66,6 +67,7 @@
 - Verified the output-folder fallback compiles through the deterministic Swift state test and final macOS app bundle build.
 - Validated all GitHub issue form YAML files locally and documented the support-report issue flow.
 - Verified the failure-screen support-report action through deterministic Swift compilation, final app build, and GitHub CI.
+- Verified `make package` locally creates `dist/VideoDownloader-1.0-macos-arm64.zip` plus a matching checksum, and added CI coverage for the package step.
 - Visually inspected the rebuilt main window and directly opened settings sheet; the compact configuration row, grouped settings, segmented format control, explanatory text, toggles, scrolling, and close/diagnostic actions rendered without overlap.
 - Final deterministic `make test` passed after the settings and keep-awake polish.
 - Final bundled diagnostics reported `ready` with zero failures, and strict platform live smoke tests passed 2/2 Bilibili/YouTube expectations after the settings polish.
