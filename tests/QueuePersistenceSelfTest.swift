@@ -67,6 +67,49 @@ struct QueuePersistenceSelfTest {
             throw TestFailure("batch detection progress summary is inconsistent")
         }
 
+        let legacyHistoryJSON = """
+        [{
+            "title": "Legacy item",
+            "url": "https://example.com/legacy",
+            "filePath": "/tmp/legacy.mp4",
+            "fileName": "legacy.mp4",
+            "fileSize": "12 MB",
+            "outputFormat": "mp4",
+            "status": "success",
+            "date": 0
+        }]
+        """
+        let legacyHistory = try JSONDecoder().decode([DownloadRecord].self, from: Data(legacyHistoryJSON.utf8))
+        guard legacyHistory.first?.isSuccess == true,
+              legacyHistory.first?.compatibility == nil else {
+            throw TestFailure("legacy history record did not decode without media-summary fields")
+        }
+        let richRecord = DownloadRecord(
+            title: "Rich item",
+            url: "https://example.com/rich",
+            filePath: "/tmp/rich.mp4",
+            fileName: "rich.mp4",
+            fileSize: "42 MB",
+            outputFormat: "mp4",
+            status: "success",
+            error: nil,
+            referer: nil,
+            durationHuman: "02:00",
+            videoCodec: "H264",
+            audioCodec: "AAC",
+            compatibility: "compatible",
+            compatibilityNote: "mp4-compatible",
+            date: Date(timeIntervalSince1970: 0)
+        )
+        let richData = try JSONEncoder().encode(richRecord)
+        let restoredRich = try JSONDecoder().decode(DownloadRecord.self, from: richData)
+        guard restoredRich.isPlayable,
+              restoredRich.durationHuman == "02:00",
+              restoredRich.videoCodec == "H264",
+              restoredRich.audioCodec == "AAC" else {
+            throw TestFailure("rich history record lost media-summary fields")
+        }
+
         let vm = DownloadViewModel()
         vm.clearQueue()
         vm.clearFailedDownloads()

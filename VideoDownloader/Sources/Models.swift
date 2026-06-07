@@ -342,13 +342,20 @@ struct DownloadRecord: Identifiable, Codable {
     let status: String
     let error: String?
     let referer: String?
+    let durationHuman: String?
+    let videoCodec: String?
+    let audioCodec: String?
+    let compatibility: String?
+    let compatibilityNote: String?
     let date: Date
 
     enum CodingKeys: String, CodingKey {
-        case title, url, filePath, fileName, fileSize, outputFormat, status, error, referer, date
+        case title, url, filePath, fileName, fileSize, outputFormat, status, error, referer
+        case durationHuman, videoCodec, audioCodec, compatibility, compatibilityNote, date
     }
 
     var isSuccess: Bool { status == "success" }
+    var isPlayable: Bool { compatibility == "compatible" }
 
     init(
         title: String,
@@ -360,6 +367,11 @@ struct DownloadRecord: Identifiable, Codable {
         status: String,
         error: String?,
         referer: String?,
+        durationHuman: String? = nil,
+        videoCodec: String? = nil,
+        audioCodec: String? = nil,
+        compatibility: String? = nil,
+        compatibilityNote: String? = nil,
         date: Date
     ) {
         self.title = title
@@ -371,6 +383,11 @@ struct DownloadRecord: Identifiable, Codable {
         self.status = status
         self.error = error
         self.referer = referer
+        self.durationHuman = durationHuman
+        self.videoCodec = videoCodec
+        self.audioCodec = audioCodec
+        self.compatibility = compatibility
+        self.compatibilityNote = compatibilityNote
         self.date = date
     }
 
@@ -385,6 +402,11 @@ struct DownloadRecord: Identifiable, Codable {
         status = try c.decodeIfPresent(String.self, forKey: .status) ?? "success"
         error = try c.decodeIfPresent(String.self, forKey: .error)
         referer = try c.decodeIfPresent(String.self, forKey: .referer)
+        durationHuman = try c.decodeIfPresent(String.self, forKey: .durationHuman)
+        videoCodec = try c.decodeIfPresent(String.self, forKey: .videoCodec)
+        audioCodec = try c.decodeIfPresent(String.self, forKey: .audioCodec)
+        compatibility = try c.decodeIfPresent(String.self, forKey: .compatibility)
+        compatibilityNote = try c.decodeIfPresent(String.self, forKey: .compatibilityNote)
         date = try c.decodeIfPresent(Date.self, forKey: .date) ?? Date()
     }
 }

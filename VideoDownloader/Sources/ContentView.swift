@@ -2177,12 +2177,31 @@ struct HistoryRow: View {
                     Text(Self.formatter.string(from: record.date))
                     Text(record.outputFormat.uppercased())
                     if !record.fileSize.isEmpty { Text(record.fileSize) }
+                    if let duration = record.durationHuman, !duration.isEmpty, duration != "??:??" {
+                        Text(duration)
+                    }
                     if let error = record.error, !record.isSuccess {
                         Text(String(error.prefix(90))).foregroundColor(.orange)
                     }
                 }
                 .font(.system(size: 9, design: .monospaced))
                 .foregroundColor(.secondary)
+                if record.isSuccess, hasMediaSummary {
+                    HStack(spacing: 5) {
+                        if record.isPlayable {
+                            miniBadge("可播放", icon: "checkmark.seal.fill", tint: .green)
+                        } else if let note = record.compatibilityNote, !note.isEmpty {
+                            miniBadge("需注意", icon: "exclamationmark.triangle.fill", tint: .orange)
+                                .help(note)
+                        }
+                        if let video = record.videoCodec, !video.isEmpty {
+                            miniBadge(video, icon: "film", tint: D.accent)
+                        }
+                        if let audio = record.audioCodec, !audio.isEmpty {
+                            miniBadge(audio, icon: "waveform", tint: D.mint)
+                        }
+                    }
+                }
                 Text(record.url)
                     .font(.system(size: 9, design: .monospaced))
                     .foregroundColor(.secondary.opacity(0.65))
@@ -2223,5 +2242,21 @@ struct HistoryRow: View {
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.primary.opacity(hover ? 0.07 : 0.045)))
         .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
         .onHover { value in withAnimation(.easeOut(duration: 0.12)) { hover = value } }
+    }
+
+    private var hasMediaSummary: Bool {
+        record.compatibility != nil
+            || !(record.videoCodec ?? "").isEmpty
+            || !(record.audioCodec ?? "").isEmpty
+    }
+
+    private func miniBadge(_ text: String, icon: String, tint: Color) -> some View {
+        Label(text, systemImage: icon)
+            .font(.system(size: 8, weight: .semibold))
+            .foregroundColor(tint)
+            .lineLimit(1)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(RoundedRectangle(cornerRadius: 5, style: .continuous).fill(tint.opacity(0.10)))
     }
 }

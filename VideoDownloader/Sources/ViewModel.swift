@@ -1090,7 +1090,8 @@ final class DownloadViewModel: ObservableObject {
                         fileSize: r.fileSizeHuman ?? "",
                         status: "success",
                         error: nil,
-                        referer: video.referer
+                        referer: video.referer,
+                        response: r
                     )
                     if let p = r.filePath, !self.queueAutoContinue || self.downloadQueue.isEmpty {
                         NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: p)])
@@ -1737,6 +1738,21 @@ final class DownloadViewModel: ObservableObject {
         if let path = record.filePath {
             parts.append("File: \(path)")
         }
+        if let duration = record.durationHuman, !duration.isEmpty {
+            parts.append("Duration: \(duration)")
+        }
+        if let video = record.videoCodec, !video.isEmpty {
+            parts.append("Video: \(video)")
+        }
+        if let audio = record.audioCodec, !audio.isEmpty {
+            parts.append("Audio: \(audio)")
+        }
+        if let compatibility = record.compatibility, !compatibility.isEmpty {
+            parts.append("Compatibility: \(compatibility)")
+        }
+        if let note = record.compatibilityNote, !note.isEmpty {
+            parts.append("Compatibility note: \(note)")
+        }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(parts.joined(separator: "\n"), forType: .string)
         log("📋 已复制历史记录")
@@ -1777,7 +1793,8 @@ final class DownloadViewModel: ObservableObject {
         fileSize: String,
         status: String,
         error: String?,
-        referer: String?
+        referer: String?,
+        response: DownloadResponse? = nil
     ) {
         let record = DownloadRecord(
             title: title,
@@ -1789,6 +1806,11 @@ final class DownloadViewModel: ObservableObject {
             status: status,
             error: error,
             referer: referer,
+            durationHuman: response?.durationHuman,
+            videoCodec: response?.videoCodec,
+            audioCodec: response?.audioCodec,
+            compatibility: response?.compatibility,
+            compatibilityNote: response?.compatibilityNote,
             date: Date()
         )
         history.insert(record, at: 0)
