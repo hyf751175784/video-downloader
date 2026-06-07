@@ -75,6 +75,23 @@ struct QueuePersistenceSelfTest {
         guard codecHints.contains("改用 MKV 或转码") else {
             throw TestFailure("codec failure did not produce remux/transcode recovery hint: \(codecHints)")
         }
+        let failedRecordInfo = DownloadViewModel.recordInfoText(for: DownloadRecord(
+            title: "Failed with hints",
+            url: "https://example.com/fail",
+            filePath: nil,
+            fileName: nil,
+            fileSize: "",
+            outputFormat: "mp4",
+            status: "failed",
+            error: "403 forbidden, cookie required",
+            referer: "https://example.com/watch",
+            date: Date(timeIntervalSince1970: 0)
+        ))
+        guard failedRecordInfo.contains("Recovery hints:"),
+              failedRecordInfo.contains("切换代理节点"),
+              failedRecordInfo.contains("启用 Chrome Cookies") else {
+            throw TestFailure("failed history record export did not include recovery hints: \(failedRecordInfo)")
+        }
 
         let batch = BatchDetectionSnapshot(total: 4, completed: 2, added: 1, failed: 1)
         guard batch.percent == 50, batch.summary.contains("2/4") else {

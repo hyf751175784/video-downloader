@@ -2245,6 +2245,13 @@ struct HistoryRow: View {
                         }
                     }
                 }
+                if !record.isSuccess, !failureHints.isEmpty {
+                    HStack(spacing: 5) {
+                        ForEach(Array(failureHints.prefix(3)), id: \.self) { hint in
+                            miniBadge(hint, icon: Self.failureHintIcon(hint), tint: .orange)
+                        }
+                    }
+                }
                 Text(record.url)
                     .font(.system(size: 9, design: .monospaced))
                     .foregroundColor(.secondary.opacity(0.65))
@@ -2294,6 +2301,11 @@ struct HistoryRow: View {
             || record.hasFilePath && !record.fileExists
     }
 
+    private var failureHints: [String] {
+        guard let error = record.error, !record.isSuccess else { return [] }
+        return DownloadViewModel.failureRecoveryHints(for: error)
+    }
+
     private func miniBadge(_ text: String, icon: String, tint: Color) -> some View {
         Label(text, systemImage: icon)
             .font(.system(size: 8, weight: .semibold))
@@ -2302,5 +2314,16 @@ struct HistoryRow: View {
             .padding(.horizontal, 5)
             .padding(.vertical, 2)
             .background(RoundedRectangle(cornerRadius: 5, style: .continuous).fill(tint.opacity(0.10)))
+    }
+
+    private static func failureHintIcon(_ text: String) -> String {
+        if text.contains("Cookies") { return "key.fill" }
+        if text.contains("捕获") { return "scope" }
+        if text.contains("代理") || text.contains("网络") { return "network" }
+        if text.contains("目录") { return "folder.badge.questionmark" }
+        if text.contains("MKV") || text.contains("转码") { return "film.stack" }
+        if text.contains("DRM") { return "lock.fill" }
+        if text.contains("Referer") { return "link.badge.plus" }
+        return "doc.text.magnifyingglass"
     }
 }

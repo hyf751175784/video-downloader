@@ -1834,6 +1834,12 @@ final class DownloadViewModel: ObservableObject {
     }
 
     func copyRecordInfo(_ record: DownloadRecord) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(Self.recordInfoText(for: record), forType: .string)
+        log("📋 已复制历史记录")
+    }
+
+    static func recordInfoText(for record: DownloadRecord) -> String {
         var parts = [record.url]
         if let referer = record.referer, !referer.isEmpty {
             parts.append("Referer: \(referer)")
@@ -1856,9 +1862,13 @@ final class DownloadViewModel: ObservableObject {
         if let note = record.compatibilityNote, !note.isEmpty {
             parts.append("Compatibility note: \(note)")
         }
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(parts.joined(separator: "\n"), forType: .string)
-        log("📋 已复制历史记录")
+        if let error = record.error, !record.isSuccess {
+            let hints = Self.failureRecoveryHints(for: error)
+            if !hints.isEmpty {
+                parts.append("Recovery hints: \(hints.joined(separator: ", "))")
+            }
+        }
+        return parts.joined(separator: "\n")
     }
 
     func copyMediaInfo(_ video: VideoInfo) {
