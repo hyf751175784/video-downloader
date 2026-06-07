@@ -889,15 +889,42 @@ def _extract_output_paths(text: str, output_dir: str) -> list[str]:
         r"(?m)^\[download\]\s+(.+?)\s+has already been downloaded$",
     ]
     found: list[str] = []
+
+    def add_candidate(value: str) -> None:
+        path = _clean_output_path(value)
+        if path.startswith("file://"):
+            path = unquote(urlparse(path).path)
+        if not path:
+            return
+        if not os.path.isabs(path):
+            path = os.path.join(output_dir, path)
+        lower = path.lower()
+        if lower.endswith((".part", ".ytdl", ".temp")):
+            return
+        if not lower.endswith(DOWNLOAD_EXTS):
+            return
+        if os.path.exists(path) and os.path.isfile(path):
+            found.append(path)
+
     for pattern in patterns:
         for match in re.finditer(pattern, text):
-            path = _clean_output_path(match.group(1))
-            if not os.path.isabs(path):
-                path = os.path.join(output_dir, path)
-            if path.lower().endswith((".part", ".ytdl", ".temp")):
-                continue
-            if os.path.exists(path) and os.path.isfile(path):
-                found.append(path)
+            add_candidate(match.group(1))
+
+    output_root = os.path.realpath(output_dir)
+    for raw_line in text.splitlines():
+        line = _clean_output_path(raw_line)
+        if not line or line.startswith("[") or len(line) > 4096:
+            continue
+        if line.startswith("file://"):
+            parsed_path = unquote(urlparse(line).path)
+            if parsed_path:
+                line = parsed_path
+        if not os.path.isabs(line):
+            continue
+        real = os.path.realpath(line)
+        if real == output_root or not real.startswith(output_root + os.sep):
+            continue
+        add_candidate(line)
 
     unique: list[str] = []
     seen = set()

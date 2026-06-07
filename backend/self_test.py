@@ -130,6 +130,22 @@ def main() -> int:
             )
             assert resolved == downloaded["file_path"], resolved
 
+            stale = out_dir / "stale.mp4"
+            fresh = out_dir / "fresh.mp4"
+            outside = root / "outside.mp4"
+            stale.write_bytes(b"old-media")
+            fresh.write_bytes(b"fresh-media")
+            outside.write_bytes(b"outside-media")
+            os.utime(stale, (200, 200))
+            os.utime(fresh, (100, 100))
+            os.utime(outside, (300, 300))
+            resolved = downloader._resolve_downloaded_media(
+                str(out_dir),
+                99_999_999_999,
+                f"noise before\n{outside}\nfile://{fresh}\nnoise after\n",
+            )
+            assert resolved == str(fresh), resolved
+
             mkv = downloader.download(m3u8, str(mkv_dir), referer=page, output_format="mkv")
             assert mkv["success"], json.dumps(mkv, ensure_ascii=False)
             assert mkv["format"] == ".mkv", json.dumps(mkv, ensure_ascii=False)
