@@ -1753,6 +1753,60 @@ final class DownloadViewModel: ObservableObject {
     }
     func log(_ msg: String) { statusLog.append(msg); if statusLog.count > 200 { statusLog.removeFirst(50) } }
 
+    func failureRecoveryHints(for error: String) -> [String] {
+        Self.failureRecoveryHints(for: error)
+    }
+
+    static func failureRecoveryHints(for error: String) -> [String] {
+        let lower = error.lowercased()
+        guard !lower.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return [] }
+        var hints: [String] = []
+
+        func add(_ hint: String) {
+            if !hints.contains(hint) {
+                hints.append(hint)
+            }
+        }
+
+        if lower.contains("drm") {
+            add("可能是 DRM")
+        }
+        if lower.contains("403") || lower.contains("412") || lower.contains("forbidden") ||
+            lower.contains("拒绝") || lower.contains("风控") {
+            add("切换代理节点")
+            add("启用 Chrome Cookies")
+        }
+        if lower.contains("cookie") || lower.contains("login") || lower.contains("sessdata") ||
+            lower.contains("登录") {
+            add("启用 Chrome Cookies")
+        }
+        if lower.contains("cloudflare") || lower.contains("challenge") ||
+            lower.contains("验证") || lower.contains("捕获") ||
+            lower.contains("unsupported url") || lower.contains("未找到视频") {
+            add("使用浏览器捕获")
+        }
+        if lower.contains("referer") || lower.contains("origin") {
+            add("保留 Referer")
+        }
+        if lower.contains("proxy") || lower.contains("dns") || lower.contains("resolve") ||
+            lower.contains("connection") || lower.contains("timeout") || lower.contains("网络") {
+            add("检查网络/代理")
+        }
+        if lower.contains("找不到输出文件") || lower.contains("permission") ||
+            lower.contains("no such file") || lower.contains("权限") {
+            add("检查输出目录")
+        }
+        if lower.contains("不可播放") || lower.contains("编码不兼容") ||
+            lower.contains("ffmpeg") || lower.contains("remux") ||
+            lower.contains("transcode") || lower.contains("codec") {
+            add("改用 MKV 或转码")
+        }
+        if hints.isEmpty {
+            add("复制支持报告")
+        }
+        return Array(hints.prefix(4))
+    }
+
     func retry(_ record: DownloadRecord) {
         url = record.url
         directReferer = record.referer ?? directReferer

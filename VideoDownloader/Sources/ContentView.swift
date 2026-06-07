@@ -1250,7 +1250,8 @@ struct ContentView: View {
     }
 
     private func errorView(_ error: String) -> some View {
-        VStack(spacing: 12) {
+        let hints = vm.failureRecoveryHints(for: error)
+        return VStack(spacing: 12) {
             Spacer()
             ZStack {
                 Circle().fill(Color.orange.opacity(0.12)).frame(width: 54, height: 54)
@@ -1269,6 +1270,14 @@ struct ContentView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 520)
                 .lineLimit(7)
+            if !hints.isEmpty {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 112), spacing: 6)], spacing: 6) {
+                    ForEach(hints, id: \.self) { hint in
+                        failureHintTag(hint)
+                    }
+                }
+                .frame(maxWidth: 520)
+            }
             HStack(spacing: 8) {
                 if vm.terminalRunReady, vm.terminalFailedDownload != nil {
                     Button {
@@ -1372,6 +1381,28 @@ struct ContentView: View {
             }
             Spacer()
         }
+    }
+
+    private func failureHintTag(_ text: String) -> some View {
+        Label(text, systemImage: failureHintIcon(text))
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundColor(D.accent)
+            .lineLimit(1)
+            .minimumScaleFactor(0.82)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(D.accent.opacity(0.10)))
+    }
+
+    private func failureHintIcon(_ text: String) -> String {
+        if text.contains("Cookies") { return "key.fill" }
+        if text.contains("捕获") { return "scope" }
+        if text.contains("代理") || text.contains("网络") { return "network" }
+        if text.contains("目录") { return "folder.badge.questionmark" }
+        if text.contains("MKV") || text.contains("转码") { return "film.stack" }
+        if text.contains("DRM") { return "lock.fill" }
+        if text.contains("Referer") { return "link.badge.plus" }
+        return "doc.text.magnifyingglass"
     }
 
     private var terminalRunSummary: some View {

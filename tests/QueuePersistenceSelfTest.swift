@@ -62,6 +62,20 @@ struct QueuePersistenceSelfTest {
             throw TestFailure("multi-link extraction did not deduplicate or trim punctuation: \(extracted)")
         }
 
+        let accessHints = DownloadViewModel.failureRecoveryHints(for: "B站 403：请开启 Chrome Cookies，必要时同时使用代理")
+        guard accessHints.contains("切换代理节点"),
+              accessHints.contains("启用 Chrome Cookies") else {
+            throw TestFailure("403/login failure did not produce proxy and cookie recovery hints: \(accessHints)")
+        }
+        let outputHints = DownloadViewModel.failureRecoveryHints(for: "找不到输出文件")
+        guard outputHints.contains("检查输出目录") else {
+            throw TestFailure("missing output failure did not produce output-directory recovery hint: \(outputHints)")
+        }
+        let codecHints = DownloadViewModel.failureRecoveryHints(for: "输出文件编码不兼容，ffmpeg transcode failed")
+        guard codecHints.contains("改用 MKV 或转码") else {
+            throw TestFailure("codec failure did not produce remux/transcode recovery hint: \(codecHints)")
+        }
+
         let batch = BatchDetectionSnapshot(total: 4, completed: 2, added: 1, failed: 1)
         guard batch.percent == 50, batch.summary.contains("2/4") else {
             throw TestFailure("batch detection progress summary is inconsistent")
