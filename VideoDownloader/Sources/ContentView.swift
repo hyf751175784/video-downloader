@@ -2194,6 +2194,10 @@ struct HistoryRow: View {
                             miniBadge("需注意", icon: "exclamationmark.triangle.fill", tint: .orange)
                                 .help(note)
                         }
+                        if record.hasFilePath, !record.fileExists {
+                            miniBadge("文件缺失", icon: "questionmark.folder", tint: .orange)
+                                .help("文件可能已被移动或删除")
+                        }
                         if let video = record.videoCodec, !video.isEmpty {
                             miniBadge(video, icon: "film", tint: D.accent)
                         }
@@ -2218,14 +2222,14 @@ struct HistoryRow: View {
                 Image(systemName: "play.fill").font(.system(size: 10)).frame(width: 25, height: 24)
             }
             .buttonStyle(B())
-            .disabled(record.filePath == nil)
-            .help("播放")
+            .disabled(!record.fileExists)
+            .help(record.fileExists ? "播放" : "文件不存在")
             Button(action: onOpen) {
                 Image(systemName: "folder").font(.system(size: 11)).frame(width: 25, height: 24)
             }
             .buttonStyle(B())
-            .disabled(record.filePath == nil)
-            .help("打开文件")
+            .disabled(!record.fileExists)
+            .help(record.fileExists ? "打开文件" : "文件不存在")
             Button(action: onCopy) {
                 Image(systemName: "doc.on.doc").font(.system(size: 10, weight: .semibold)).frame(width: 25, height: 24)
             }
@@ -2248,6 +2252,7 @@ struct HistoryRow: View {
         record.compatibility != nil
             || !(record.videoCodec ?? "").isEmpty
             || !(record.audioCodec ?? "").isEmpty
+            || record.hasFilePath && !record.fileExists
     }
 
     private func miniBadge(_ text: String, icon: String, tint: Color) -> some View {

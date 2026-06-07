@@ -109,6 +109,28 @@ struct QueuePersistenceSelfTest {
               restoredRich.audioCodec == "AAC" else {
             throw TestFailure("rich history record lost media-summary fields")
         }
+        let historyFile = FileManager.default.temporaryDirectory
+            .appendingPathComponent("video-downloader-history-\(UUID().uuidString).mp4")
+        FileManager.default.createFile(atPath: historyFile.path, contents: Data("ok".utf8))
+        let availableRecord = DownloadRecord(
+            title: "Available history file",
+            url: "https://example.com/available",
+            filePath: historyFile.path,
+            fileName: historyFile.lastPathComponent,
+            fileSize: "2 B",
+            outputFormat: "mp4",
+            status: "success",
+            error: nil,
+            referer: nil,
+            date: Date(timeIntervalSince1970: 0)
+        )
+        guard availableRecord.hasFilePath, availableRecord.fileExists else {
+            throw TestFailure("history file availability did not detect an existing file")
+        }
+        try FileManager.default.removeItem(at: historyFile)
+        guard !availableRecord.fileExists else {
+            throw TestFailure("history file availability did not detect a removed file")
+        }
 
         let vm = DownloadViewModel()
         vm.clearQueue()

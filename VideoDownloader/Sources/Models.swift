@@ -356,6 +356,11 @@ struct DownloadRecord: Identifiable, Codable {
 
     var isSuccess: Bool { status == "success" }
     var isPlayable: Bool { compatibility == "compatible" }
+    var hasFilePath: Bool { !(filePath ?? "").isEmpty }
+    var fileExists: Bool {
+        guard let filePath, !filePath.isEmpty else { return false }
+        return FileManager.default.fileExists(atPath: filePath)
+    }
 
     init(
         title: String,

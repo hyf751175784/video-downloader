@@ -1722,11 +1722,19 @@ final class DownloadViewModel: ObservableObject {
 
     func openRecord(_ record: DownloadRecord) {
         guard let path = record.filePath else { return }
+        guard record.fileExists else {
+            log("⚠️ 历史文件不存在：\(record.fileName ?? path)")
+            return
+        }
         openInFinder(path)
     }
 
     func playRecord(_ record: DownloadRecord) {
         guard let path = record.filePath else { return }
+        guard record.fileExists else {
+            log("⚠️ 历史文件不存在：\(record.fileName ?? path)")
+            return
+        }
         playFile(path)
     }
 
