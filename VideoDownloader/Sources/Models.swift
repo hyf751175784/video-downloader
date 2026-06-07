@@ -272,12 +272,14 @@ struct DownloadQueueItem: Identifiable, Codable, Equatable {
     let video: VideoInfo
     let format: VideoFormat?
     let addedAt: Date
+    let lastError: String?
 
-    init(id: UUID = UUID(), video: VideoInfo, format: VideoFormat?, addedAt: Date = Date()) {
+    init(id: UUID = UUID(), video: VideoInfo, format: VideoFormat?, addedAt: Date = Date(), lastError: String? = nil) {
         self.id = id
         self.video = video
         self.format = format
         self.addedAt = addedAt
+        self.lastError = lastError
     }
 
     var title: String {
@@ -290,6 +292,10 @@ struct DownloadQueueItem: Identifiable, Codable, Equatable {
 
     var sourceHost: String {
         URL(string: video.webpageUrl)?.host ?? "未知来源"
+    }
+
+    var withoutFailureContext: DownloadQueueItem {
+        DownloadQueueItem(id: id, video: video, format: format, addedAt: addedAt)
     }
 }
 

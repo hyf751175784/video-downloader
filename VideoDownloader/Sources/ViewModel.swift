@@ -110,6 +110,11 @@ struct PersistedQueueItem: Codable {
     let referer: String?
     let format: VideoFormat?
     let addedAt: Date
+    let lastError: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, webpageURL, referer, format, addedAt, lastError
+    }
 
     init(_ item: DownloadQueueItem) {
         id = item.id
@@ -118,6 +123,7 @@ struct PersistedQueueItem: Codable {
         referer = item.video.referer
         format = item.format
         addedAt = item.addedAt
+        lastError = item.lastError
     }
 
     var queueItem: DownloadQueueItem {
@@ -144,7 +150,18 @@ struct PersistedQueueItem: Codable {
             formats: [restoredFormat],
             formatCount: 1
         )
-        return DownloadQueueItem(id: id, video: video, format: format, addedAt: addedAt)
+        return DownloadQueueItem(id: id, video: video, format: format, addedAt: addedAt, lastError: lastError)
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        title = try c.decode(String.self, forKey: .title)
+        webpageURL = try c.decode(String.self, forKey: .webpageURL)
+        referer = try c.decodeIfPresent(String.self, forKey: .referer)
+        format = try c.decodeIfPresent(VideoFormat.self, forKey: .format)
+        addedAt = try c.decodeIfPresent(Date.self, forKey: .addedAt) ?? Date()
+        lastError = try c.decodeIfPresent(String.self, forKey: .lastError)
     }
 }
 
@@ -944,14 +961,14 @@ final class DownloadViewModel: ObservableObject {
             log("↪︎ 已在任务列表：\(item.title)")
             return
         }
-        downloadQueue.insert(item, at: 0)
+        downloadQueue.insert(item.withoutFailureContext, at: 0)
         reconcileRunTotal()
         log("↩︎ 已重新入队：\(item.title)")
     }
 
     func retryAllFailed() {
         guard !failedDownloads.isEmpty else { return }
-        let retryItems = failedDownloads
+        let retryItems = failedDownloads.map(\.withoutFailureContext)
         failedDownloads.removeAll()
         var existing = Set(downloadQueue.map { queueKey(for: $0) })
         if let activeKey = queueKey(forOptional: activeDownload) {
@@ -969,7 +986,7 @@ final class DownloadViewModel: ObservableObject {
         terminalFailedDownload = nil
         failedDownloads.removeAll { queueKey(for: $0) == queueKey(for: item) }
         downloadQueue.removeAll { queueKey(for: $0) == queueKey(for: item) }
-        downloadQueue.insert(item, at: 0)
+        downloadQueue.insert(item.withoutFailureContext, at: 0)
         startQueue()
     }
 
@@ -1045,7 +1062,7 @@ final class DownloadViewModel: ObservableObject {
                 guard ok, let d = stdout else {
                     self.runFailedCount += 1
                     let error = "下载失败: \(stderr.prefix(200))"
-                    self.recordFailedDownload(item)
+                    self.recordFailedDownload(item, error: error)
                     self.log("❌ \(error)")
                     self.addHistory(
                         title: video.title,
@@ -1063,7 +1080,7 @@ final class DownloadViewModel: ObservableObject {
                 guard let r = Self.decodeJSON(DownloadResponse.self, from: d) else {
                     self.runFailedCount += 1
                     let error = "后端结果解析失败：\(Self.outputPreview(d))"
-                    self.recordFailedDownload(item)
+                    self.recordFailedDownload(item, error: error)
                     self.log("❌ \(error)")
                     self.addHistory(
                         title: video.title,
@@ -1099,8 +1116,9 @@ final class DownloadViewModel: ObservableObject {
                     self.finishDownload(with: .completed(r))
                 } else {
                     self.runFailedCount += 1
-                    self.recordFailedDownload(item)
-                    self.log("❌ \(r.error ?? "?")")
+                    let error = r.error ?? "下载失败"
+                    self.recordFailedDownload(item, error: error)
+                    self.log("❌ \(error)")
                     self.addHistory(
                         title: video.title,
                         url: video.webpageUrl,
@@ -1108,10 +1126,10 @@ final class DownloadViewModel: ObservableObject {
                         fileName: nil,
                         fileSize: "",
                         status: "failed",
-                        error: r.error ?? "下载失败",
+                        error: error,
                         referer: video.referer
                     )
-                    self.finishDownload(with: .failed(r.error ?? "下载失败"))
+                    self.finishDownload(with: .failed(error))
                 }
             }
         }
@@ -1164,11 +1182,18 @@ final class DownloadViewModel: ObservableObject {
         queueKey(video: item.video, format: item.format)
     }
 
-    private func recordFailedDownload(_ item: DownloadQueueItem) {
+    private func recordFailedDownload(_ item: DownloadQueueItem, error: String) {
         let key = queueKey(for: item)
+        let failedItem = DownloadQueueItem(
+            id: item.id,
+            video: item.video,
+            format: item.format,
+            addedAt: item.addedAt,
+            lastError: error
+        )
         failedDownloads.removeAll { queueKey(for: $0) == key }
-        failedDownloads.insert(item, at: 0)
-        terminalFailedDownload = item
+        failedDownloads.insert(failedItem, at: 0)
+        terminalFailedDownload = failedItem
         if failedDownloads.count > 50 {
             failedDownloads.removeLast(failedDownloads.count - 50)
         }
@@ -1505,6 +1530,13 @@ final class DownloadViewModel: ObservableObject {
         var line = "- \(singleLine(item.title, limit: 120)) · \(item.formatLabel) · \(item.video.webpageUrl)"
         if let referer = item.video.referer, !referer.isEmpty {
             line += " · Referer: \(referer)"
+        }
+        if let error = item.lastError, !error.isEmpty {
+            line += " · error: \(singleLine(error, limit: 160))"
+            let hints = Self.failureRecoveryHints(for: error)
+            if !hints.isEmpty {
+                line += " · hints: \(hints.joined(separator: ", "))"
+            }
         }
         return line
     }

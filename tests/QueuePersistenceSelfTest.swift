@@ -52,6 +52,12 @@ struct QueuePersistenceSelfTest {
               restored.format == selected else {
             throw TestFailure("restored queue item lost required download metadata")
         }
+        let failedSnapshot = DownloadQueueItem(video: video, format: selected, lastError: "synthetic persisted failure")
+        let failedSnapshotData = try JSONEncoder().encode(PersistedQueueItem(failedSnapshot))
+        let restoredFailedSnapshot = try JSONDecoder().decode(PersistedQueueItem.self, from: failedSnapshotData).queueItem
+        guard restoredFailedSnapshot.lastError == "synthetic persisted failure" else {
+            throw TestFailure("failed queue snapshot lost its last error")
+        }
 
         let extracted = DownloadViewModel.extractURLs(from: """
         first https://example.com/a.mp4,
@@ -360,20 +366,24 @@ struct QueuePersistenceSelfTest {
         guard vm.failedDownloads.count == 1,
               vm.failedDownloads.first?.video.webpageUrl == failedVideo.webpageUrl,
               vm.failedDownloads.first?.format == selected,
+              vm.failedDownloads.first?.lastError == "synthetic download failure",
               vm.terminalRunReady,
-              vm.terminalFailedDownload?.video.webpageUrl == failedVideo.webpageUrl else {
-            throw TestFailure("failed task did not preserve its exact media candidate and format")
+              vm.terminalFailedDownload?.video.webpageUrl == failedVideo.webpageUrl,
+              vm.terminalFailedDownload?.lastError == "synthetic download failure" else {
+            throw TestFailure("failed task did not preserve its exact media candidate, format, and error")
         }
         let failedRestoredVM = DownloadViewModel()
         guard failedRestoredVM.failedDownloads.first?.video.webpageUrl == failedVideo.webpageUrl,
-              failedRestoredVM.failedDownloads.first?.format == selected else {
-            throw TestFailure("failed task did not persist across ViewModel restore")
+              failedRestoredVM.failedDownloads.first?.format == selected,
+              failedRestoredVM.failedDownloads.first?.lastError == "synthetic download failure" else {
+            throw TestFailure("failed task did not persist across ViewModel restore with its error")
         }
         vm.retryTerminalDownload()
         guard !vm.terminalRunReady,
               vm.terminalFailedDownload == nil,
               vm.activeDownload?.video.webpageUrl == failedVideo.webpageUrl,
-              vm.activeDownload?.format == selected else {
+              vm.activeDownload?.format == selected,
+              vm.activeDownload?.lastError == nil else {
             throw TestFailure("terminal retry did not immediately restart the exact failed task")
         }
         vm.cancel()
@@ -425,6 +435,7 @@ struct QueuePersistenceSelfTest {
               supportReport.contains("Queue: active 0, waiting 0, failed 2"),
               supportReport.contains("Failed tasks:"),
               supportReport.contains("https://example.com/slow-fail-download"),
+              supportReport.contains("error: synthetic download failure"),
               supportReport.contains("Recent history:"),
               supportReport.contains("synthetic download failure") else {
             throw TestFailure("support report did not include queue, failed-task, and recent-history context")
@@ -433,7 +444,8 @@ struct QueuePersistenceSelfTest {
         guard failedTaskList.contains("Video Downloader Task List"),
               failedTaskList.contains("Failed tasks (2):"),
               failedTaskList.contains("https://example.com/fail-download"),
-              failedTaskList.contains("https://example.com/slow-fail-download") else {
+              failedTaskList.contains("https://example.com/slow-fail-download"),
+              failedTaskList.contains("error: synthetic download failure") else {
             throw TestFailure("task-list export did not include failed tasks")
         }
         vm.clearFailedDownloads()

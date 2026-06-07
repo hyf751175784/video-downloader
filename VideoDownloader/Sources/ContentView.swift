@@ -2145,6 +2145,23 @@ struct QueueRow: View {
                 }
                 .font(.system(size: 9, weight: .medium))
                 .foregroundColor(.secondary)
+                if isFailed, let error = item.lastError, !error.isEmpty {
+                    HStack(spacing: 5) {
+                        Text(String(error.prefix(72)))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        ForEach(Array(DownloadViewModel.failureRecoveryHints(for: error).prefix(2)), id: \.self) { hint in
+                            Text(hint)
+                                .font(.system(size: 8, weight: .semibold))
+                                .lineLimit(1)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange.opacity(0.10)))
+                        }
+                    }
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.orange)
+                }
             }
             Spacer()
             Text(isFailed ? "失败" : (isActive ? "进行中" : "等待"))
@@ -2176,9 +2193,13 @@ struct QueueRow: View {
             }
         }
         .padding(.horizontal, 10)
-        .frame(height: 58)
+        .frame(height: rowHeight)
         .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.primary.opacity(0.04)))
         .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(isFailed ? Color.orange.opacity(0.24) : (isActive ? D.accent.opacity(0.24) : Color.primary.opacity(0.07)), lineWidth: 0.5))
+    }
+
+    private var rowHeight: CGFloat {
+        isFailed && !(item.lastError ?? "").isEmpty ? 72 : 58
     }
 }
 
