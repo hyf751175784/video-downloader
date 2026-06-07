@@ -158,7 +158,7 @@ make test-live LIVE_ARGS='--group new-user-sites --proxy http://127.0.0.1:7890 -
 
 GitHub Actions 会在推送和 Pull Request 时运行确定性质量门禁：安装依赖、编译 Python 后端文件、运行 `make test`，并构建 macOS 应用包。真实网站测试保留为手动执行，因为外部站点状态波动很大。
 
-CI 也会运行 `make package`，确保发布 zip 和校验文件路径持续可用。
+CI 也会运行 `make package`，并把生成的 zip 和校验文件作为短期 Actions artifact 上传，方便测试下载。
 
 ## 工作原理
 

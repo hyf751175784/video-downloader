@@ -152,7 +152,7 @@ Live tests are intentionally separate. Websites change, block, rate-limit, expir
 
 GitHub Actions runs the deterministic quality gate on pushes and pull requests: install dependencies, compile Python backend files, run `make test`, and build the macOS app bundle. Live website tests remain manual because external sites are volatile.
 
-The CI also runs `make package` so the release zip and checksum path stay healthy.
+The CI also runs `make package` and uploads the generated zip plus checksum as a short-lived Actions artifact for testing.
 
 ## How It Works
 

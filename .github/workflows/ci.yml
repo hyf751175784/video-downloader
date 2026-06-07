@@ -48,3 +48,13 @@ jobs:
 
       - name: Build distributable package
         run: make package
+
+      - name: Upload packaged app artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: VideoDownloader-macos-arm64
+          path: |
+            dist/*.zip
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 14

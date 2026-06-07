@@ -19,6 +19,8 @@ GitHub Actions runs the deterministic gate on pushes and pull requests: dependen
 
 Use `make package` before preparing a release. It creates `dist/VideoDownloader-<version>-macos-arm64.zip` and a matching SHA-256 checksum file.
 
+Successful CI runs upload the generated package and checksum as an Actions artifact for short-lived testing.
+
 ## Reporting Issues
 
 Use the GitHub issue forms instead of blank issues.
@@ -84,6 +86,8 @@ make run
 GitHub Actions 会在推送和 Pull Request 时运行确定性门禁：安装依赖、Python 编译、`make test` 和 `make build`。
 
 准备发布前运行 `make package`。它会生成 `dist/VideoDownloader-<version>-macos-arm64.zip` 和对应的 SHA-256 校验文件。
+
+CI 成功后会把生成的包和校验文件上传为 Actions artifact，方便短期测试。
 
 ## 反馈问题
 
