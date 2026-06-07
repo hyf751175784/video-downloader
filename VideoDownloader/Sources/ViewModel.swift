@@ -1347,6 +1347,42 @@ final class DownloadViewModel: ObservableObject {
         log("📋 已复制支持报告")
     }
 
+    func copyTaskList() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(taskListText(), forType: .string)
+        log("📋 已复制任务列表")
+    }
+
+    func taskListText(now: Date = Date()) -> String {
+        var lines = [
+            "Video Downloader Task List",
+            "Generated: \(Self.supportReportDateFormatter.string(from: now))",
+            "Run: \(runFinishedCount)/\(runTotalCount) processed, \(runCompletedCount) success, \(runFailedCount) failed, overall \(Int(runOverallPercent))%",
+            "Output: \(outputDir)",
+            "Auto continue: \(queueAutoContinue ? "enabled" : "disabled")",
+        ]
+
+        if let batchDetection {
+            lines.append("Detection batch: \(batchDetection.summary)")
+        } else if hasPendingBatchDetection {
+            lines.append("Detection batch: pending restore available")
+        }
+
+        lines.append("")
+        lines.append("Active task:")
+        lines.append(activeDownload.map { supportTaskLine($0) } ?? "- none")
+
+        lines.append("")
+        lines.append("Waiting tasks (\(downloadQueue.count)):")
+        appendTaskList(downloadQueue, to: &lines, limit: 50)
+
+        lines.append("")
+        lines.append("Failed tasks (\(failedDownloads.count)):")
+        appendTaskList(failedDownloads, to: &lines, limit: 50)
+
+        return lines.joined(separator: "\n")
+    }
+
     func supportReportText(now: Date = Date()) -> String {
         var lines = [
             "Video Downloader Support Report",
@@ -1448,15 +1484,20 @@ final class DownloadViewModel: ObservableObject {
     }
 
     private func appendTaskList(_ items: [DownloadQueueItem], to lines: inout [String]) {
+        appendTaskList(items, to: &lines, limit: 10)
+    }
+
+    private func appendTaskList(_ items: [DownloadQueueItem], to lines: inout [String], limit: Int) {
         if items.isEmpty {
             lines.append("- none")
             return
         }
-        for item in items.prefix(10) {
+        let maxItems = max(limit, 0)
+        for item in items.prefix(maxItems) {
             lines.append(supportTaskLine(item))
         }
-        if items.count > 10 {
-            lines.append("- ... \(items.count - 10) more")
+        if items.count > maxItems {
+            lines.append("- ... \(items.count - maxItems) more")
         }
     }
 

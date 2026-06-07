@@ -1784,6 +1784,14 @@ struct ContentView: View {
                     .help("重新入队全部失败任务")
                 }
                 Button {
+                    vm.copyTaskList()
+                } label: {
+                    Image(systemName: "doc.on.clipboard").font(.system(size: 11)).frame(width: 28, height: 26)
+                }
+                .buttonStyle(B())
+                .disabled(vm.activeDownload == nil && vm.downloadQueue.isEmpty && vm.failedDownloads.isEmpty)
+                .help("复制任务列表")
+                Button {
                     showQueue = false
                 } label: {
                     Image(systemName: "xmark").font(.system(size: 10, weight: .semibold)).frame(width: 24, height: 24)

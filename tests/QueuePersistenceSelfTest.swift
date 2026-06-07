@@ -398,6 +398,13 @@ struct QueuePersistenceSelfTest {
               supportReport.contains("synthetic download failure") else {
             throw TestFailure("support report did not include queue, failed-task, and recent-history context")
         }
+        let failedTaskList = vm.taskListText(now: Date(timeIntervalSince1970: 0))
+        guard failedTaskList.contains("Video Downloader Task List"),
+              failedTaskList.contains("Failed tasks (2):"),
+              failedTaskList.contains("https://example.com/fail-download"),
+              failedTaskList.contains("https://example.com/slow-fail-download") else {
+            throw TestFailure("task-list export did not include failed tasks")
+        }
         vm.clearFailedDownloads()
 
         let slowVideo = VideoInfo(
@@ -420,6 +427,13 @@ struct QueuePersistenceSelfTest {
               vm.systemActivityActive,
               vm.runTotalCount == 2 else {
             throw TestFailure("synthetic download did not become active with keep-awake enabled")
+        }
+        let activeTaskList = vm.taskListText(now: Date(timeIntervalSince1970: 0))
+        guard activeTaskList.contains("Active task:"),
+              activeTaskList.contains("https://example.com/slow-download"),
+              activeTaskList.contains("Waiting tasks (1):"),
+              activeTaskList.contains("https://example.com/fail-download") else {
+            throw TestFailure("task-list export did not include active and waiting tasks")
         }
         vm.queueAutoContinue = false
         guard vm.runTotalCount == 1 else {
